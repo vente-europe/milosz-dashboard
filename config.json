@@ -1,0 +1,47 @@
+{
+  "_comment": "Rejestr dashboardów Miłosz-Console. Sekcje: topline (Przeglądowe) na górze, detailed (Szczegółowe) niżej. Każda pozycja: id, title, group ('topline'|'detailed'), template ('standalone'), file. Placeholdery mają _status:'do_zbudowania'.",
+  "dashboards": [
+    {
+      "id": "szelki-topline",
+      "title": "Szelki dla psa — Top Line (DE/IT/FR)",
+      "group": "topline",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
+      "id": "obroze-topline",
+      "title": "Obroże dla psa — Top Line (DE/IT/FR)",
+      "group": "topline",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
+      "id": "smycze-topline",
+      "title": "Smycze dla psa — Top Line (DE/IT/FR)",
+      "group": "topline",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
+      "id": "szelki-detailed",
+      "title": "Szelki dla psa — Szczegółowy (DE/IT/FR)",
+      "group": "detailed",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
+      "id": "obroze-detailed",
+      "title": "Obroże dla psa — Szczegółowy (DE/IT/FR)",
+      "group": "detailed",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
+      "id": "smycze-detailed",
+      "title": "Smycze dla psa — Szczegółowy (DE/IT/FR)",
+      "group": "detailed",
+      "template": "standalone",
+      "file": "index.html"
+    }
+  ]
+}

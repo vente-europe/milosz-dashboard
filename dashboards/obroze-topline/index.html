@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Obroże dla psa — Top Line (DE/IT/FR)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;font-size:13px}
+header{background:#0f2942;color:#fff;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+header .titles h1{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+header .titles span{font-size:.75rem;color:#94a3b8}
+.xray-btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.xray-btn{background:#16a34a;color:#fff;padding:8px 14px;border-radius:6px;font-size:.76rem;font-weight:600;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:background .15s}
+.xray-btn:hover{background:#15803d}
+.xray-btn svg{width:14px;height:14px}
+.main{max-width:1200px;margin:0 auto;padding:28px 24px}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:#fff;border-radius:8px;padding:14px 18px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.kpi-v{font-size:1.25rem;font-weight:700;color:#0f2942;line-height:1.2}
+.kpi-l{font-size:.68rem;color:#64748b;margin-top:5px;text-transform:uppercase;letter-spacing:.05em}
+.charts-row{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:24px}
+.card{background:#fff;border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:24px}
+.card h3{font-size:.83rem;font-weight:600;color:#475569;margin-bottom:16px}
+.chart-wrap{position:relative;height:300px}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;text-align:left;padding:8px 10px;font-weight:600;color:#475569;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid #e2e8f0}
+td{padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:.82rem}
+tr:hover td{background:#f8fafc}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.note{font-size:.7rem;color:#64748b;margin-top:18px;padding:10px 13px;background:#f8fafc;border-radius:6px;border-left:2px solid #cbd5e1;line-height:1.6}
+.total-row td{font-weight:700;color:#0f2942;background:#f8fafc;border-top:2px solid #e2e8f0}
+.heatmap td.hm{text-align:center;font-size:.78rem;font-weight:600;padding:10px 8px;min-width:70px}
+.heatmap td.hm-total{text-align:center;font-size:.78rem;font-weight:700;padding:10px 8px;min-width:70px;border-left:2px solid #e2e8f0;background:#f8fafc;color:#0f2942}
+.heatmap tr.hm-cli td.seg-label{font-weight:800;color:#0f2942}
+.heatmap tr.hm-extra td.seg-label{font-weight:800;color:#0f2942;background:#fef9c3}
+.heatmap tr.hm-extra td{border-top:1px dashed #fcd34d}
+.hm-legend{font-size:.7rem;color:#475569;margin-bottom:12px;padding:9px 12px;background:#f8fafc;border-radius:6px;line-height:1.55}
+.hm-legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:middle;margin:0 3px 2px 0}
+.heatmap .seg-label{font-weight:600;color:#1e293b;padding:10px 12px;white-space:nowrap}
+.heatmap .total-row td{font-weight:700;border-top:2px solid #e2e8f0;background:#f8fafc;color:#0f2942}
+.summary{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:14px;border-left:4px solid #0f2942;overflow:hidden}
+.summary>summary,.kw-block>summary{cursor:pointer;padding:14px 22px;font-size:.85rem;font-weight:700;color:#0f2942;text-transform:uppercase;letter-spacing:.06em;list-style:none;display:flex;align-items:center;gap:10px;user-select:none}
+.summary>summary:hover,.kw-block>summary:hover{background:#f8fafc}
+.summary>summary::-webkit-details-marker,.kw-block>summary::-webkit-details-marker{display:none}
+.summary>summary::before,.kw-block>summary::before{content:'\25B8';display:inline-block;transition:transform .2s;color:#64748b;width:14px}
+.summary[open]>summary::before,.kw-block[open]>summary::before{transform:rotate(90deg)}
+.summary>summary .hint,.kw-block>summary .hint{font-size:.66rem;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0;margin-left:auto;font-style:italic}
+.summary-inner{padding:2px 22px 18px}
+.summary-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.summary-col h3{font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #f1f5f9}
+.summary-col p{font-size:.82rem;line-height:1.55;color:#334155;margin-bottom:8px}
+.summary-col strong{color:#0f2942}
+@media(max-width:980px){.summary-cols{grid-template-columns:1fr;gap:16px}}
+.kw-block{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:22px;border-left:4px solid #16a34a;overflow:hidden}
+.kw-inner{padding:2px 22px 18px}
+.kw-inner .kw-intro{font-size:.78rem;color:#475569;line-height:1.5;margin-bottom:14px}
+.kw-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.kw-market{border:1px solid #e2e8f0;border-radius:6px;padding:12px 14px;background:#fafafa}
+.kw-market-header{font-size:.78rem;font-weight:700;color:#0f2942;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}
+.kw-list code{display:block;background:#f1f5f9;padding:3px 7px;border-radius:3px;margin:2px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.7rem;color:#0f2942}
+@media(max-width:700px){.kw-cols{grid-template-columns:1fr}}
+.pills{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.pills .label{font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+.pill{padding:7px 14px;border:2px solid #cbd5e1;background:#fff;border-radius:18px;cursor:pointer;font-size:.75rem;font-weight:600;color:#475569;transition:all .15s}
+.pill:hover{border-color:#94a3b8;color:#1e293b}
+.pill.active{background:#0f2942;border-color:#0f2942;color:#fff}
+.season-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.season-kpi{background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #e2e8f0}
+.season-kpi .v{font-size:1.1rem;font-weight:700;color:#0f2942}
+.season-kpi .l{font-size:.62rem;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.season-note{font-size:.7rem;color:#64748b;margin-bottom:14px;line-height:1.5}
+.season-desc{font-size:.72rem;color:#475569;line-height:1.6;background:#f8fafc;border-left:3px solid #0891b2;border-radius:6px;padding:11px 14px;margin-bottom:16px}
+.season-desc ul{margin:7px 0 9px 18px}
+.season-desc li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+  <div class="titles">
+    <h1>Obroże dla psa &mdash; Rynki międzynarodowe (Top Line)</h1>
+    <span>Projekcja 12-miesięczna oparta na sezonowości sprzedaży &nbsp;|&nbsp; snapshot 30-dniowy: 2026-06-11</span>
+  </div>
+</header>
+<div class="main">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-v">&euro;33.55M</div><div class="kpi-l">Łączna sprzedaż 12 mies. &euro; (Obroże dla psa)</div></div>
+    <div class="kpi"><div class="kpi-v">2 099 152</div><div class="kpi-l">Łączne sztuki 12 mies.</div></div>
+    <div class="kpi"><div class="kpi-v">3 rynki</div><div class="kpi-l">DE &bull; FR &bull; IT</div></div>
+  </div>
+  <div style="background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.78rem;line-height:1.55;color:#78350f">
+    <strong>⚠️ Uwaga o rynku włoskim (IT):</strong> Jungle Scout w ogóle nie obsługuje tej kategorii na amazon.it, więc dane dla Włoch pochodzą <strong>wyłącznie z Helium 10</strong>. Helium 10 <strong>zaniża bezwzględną wielkość rynku</strong> — realne przychody i liczby sztuk we Włoszech są wyższe niż pokazane na wykresach. <strong>Proporcje między markami</strong> wewnątrz rynku IT pozostają jednak wiarygodne: udziały i ranking liczone są na tych samych danych, więc dobrze widać, <strong>kto jest liderem i które marki sprzedają najwięcej</strong>. Wniosek: liczby IT traktuj jako wskazanie <strong>hierarchii i liderów</strong>, a nie jako rzeczywisty rozmiar rynku.
+  </div>
+  <details class="summary">
+    <summary>Podsumowanie &mdash; kluczowe wnioski (12 mies.) <span class="hint">kliknij żeby rozwinąć</span></summary>
+    <div class="summary-inner"><div class="summary-cols">
+      <div class="summary-col"><h3>Rynki</h3>
+        <p>Największym rynkiem dla kategorii <strong>Obroże dla psa</strong> są <strong>Niemcy</strong> —
+        <strong>&euro;26.51 mln</strong> (12 mies.), czyli <strong>79%</strong> całości DE+IT+FR.</p>
+        <p>Hierarchia: <strong>Niemcy</strong> (&euro;26.51 mln), <strong>Francja</strong> (&euro;7.01 mln),
+        <strong>Włochy</strong> (&euro;0.03 mln). Po odfiltrowaniu słabych marek: <strong>619</strong> ASIN-ów.</p></div>
+      <div class="summary-col"><h3>Sezonowość</h3><p>Wspólna (pooled) krzywa kategorii: szczyt sezonu <strong>Maj</strong> (indeks 1.19×), dołek <strong>Wrz</strong> (0.8×) — peak/trough <strong>1.49×</strong>. Mnożnik 30d→12 mies. = <strong>×10.1</strong>.</p>
+        <p>Jak liczymy krzywę i dlaczego to oszacowanie &mdash; patrz sekcja „Sezonowość" niżej.</p></div>
+      <div class="summary-col"><h3>Konkurencja i ceny</h3>
+        <p>Kategoria jest umiarkowanie rozproszona — TOP 3 marki to <strong>27%</strong> przychodu.
+        Lider: <strong>TSPRO</strong> (<strong>10%</strong>, &euro;3.44 mln/rok). Aktywnych marek: <strong>103</strong>.</p>
+        <p>Średnia cena w kategorii: <strong>&euro;16</strong>/szt (12 mies. rev / 12 mies. units).</p></div></div></div>
+  </details>
+  <details class="kw-block">
+    <summary>Słowa kluczowe użyte w analizie <span class="hint">kliknij żeby rozwinąć</span></summary>
+    <div class="kw-inner">
+    <p class="kw-intro">Dla każdego rynku wykonano osobne przeszukiwania słów kluczowych; wyniki zmerge'owano per rynek i odduplikowano po ASIN. Źródła danych i progi filtrowania &mdash; patrz nota „Źródło danych" na dole strony.</p>
+    <div class="kw-cols"><div class="kw-market"><div class="kw-market-header">🇩🇪 Niemcy (DE)</div><div class="kw-list"><code>Hundehalsband</code><code>Hundehalsband kleine Hunde</code><code>Hundehalsband mittelgroße Hunde</code><code>Hundehalsband große Hunde</code></div></div><div class="kw-market"><div class="kw-market-header">🇫🇷 Francja (FR)</div><div class="kw-list"><code>collier pour chien</code><code>collier pour petit chien</code><code>collier pour moyenne chien</code><code>collier pour grand chien</code></div></div><div class="kw-market"><div class="kw-market-header">🇮🇹 Włochy (IT)</div><div class="kw-list"><code>collare per cane</code><code>collare taglia piccola</code><code>collare taglia media</code><code>collare taglia grande</code></div></div></div></div>
+  </details>
+  <div class="charts-row">
+    <div class="card" style="margin:0"><h3>Sprzedaż (&euro;) wg rynku &mdash; 12 mies.</h3><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
+    <div class="card" style="margin:0"><h3>Udział w sztukach wg rynku &mdash; 12 mies.</h3><div class="chart-wrap"><canvas id="pieChart"></canvas></div></div>
+  </div>
+  <div class="card">
+    <h3>Sztuki i sprzedaż (&euro;) wg rynku &mdash; 12 mies.</h3>
+    <table><thead><tr>
+      <th>Rynek</th><th>Waluta</th>
+      <th style="text-align:right">Sztuki (30 dni)</th><th style="text-align:right">Mnożnik</th>
+      <th style="text-align:right">Sztuki 12 mies. (szac.)</th><th style="text-align:right">Sprzedaż 12 mies. &euro;</th><th style="text-align:right">Udział</th>
+    </tr></thead><tbody><tr><td><span class="dot" style="background:#2563eb"></span>🇩🇪 Niemcy (DE)</td><td>EUR</td><td class="num">158 778</td><td class="num">10.1×</td><td class="num">1 604 684</td><td class="num">&euro;26 505 501</td><td class="num">79.0%</td></tr><tr><td><span class="dot" style="background:#0891b2"></span>🇫🇷 Francja (FR)</td><td>EUR</td><td class="num">48 626</td><td class="num">10.1×</td><td class="num">491 437</td><td class="num">&euro;7 008 696</td><td class="num">20.9%</td></tr><tr><td><span class="dot" style="background:#7c3aed"></span>🇮🇹 Włochy (IT)</td><td>EUR</td><td class="num">300</td><td class="num">10.1×</td><td class="num">3 031</td><td class="num">&euro;34 425</td><td class="num">0.1%</td></tr><tr class="total-row"><td colspan="2"><strong>Razem</strong></td><td class="num">207 704</td><td class="num">10.1×</td><td class="num">2 099 152</td><td class="num">&euro;33 548 622</td><td class="num">100%</td></tr></tbody></table>
+    <div class="note">Mnożnik jest <strong>sezonowy i jednolity</strong> dla wszystkich rynków (nie prosty ×12) &mdash; różnice między rynkami wynikają z ich danych 30-dniowych. Skąd się bierze i dlaczego nie ×12 &mdash; patrz sekcja „Sezonowość" poniżej.</div>
+  </div>
+  <div class="charts-row">
+    <div class="card" style="margin:0"><h3>Udział marek wg sprzedaży (&euro;) &mdash; 12 mies.</h3><div class="chart-wrap" style="height:340px"><canvas id="brandRevPie"></canvas></div></div>
+    <div class="card" style="margin:0"><h3>Udział marek wg sztuk &mdash; 12 mies.</h3><div class="chart-wrap" style="height:340px"><canvas id="brandUnitsPie"></canvas></div></div>
+  </div>
+  <div class="card">
+    <h3>Sprzedaż (&euro;) wg marki i rynku &mdash; 12 mies.</h3>
+    <div class="hm-legend"><strong>Jak czytać:</strong> <strong>pogrubione</strong> marki to konkurenci wskazani przez klienta. <span class="sw" style="background:#fef9c3;border:1px solid #fcd34d"></span><strong>Żółte tło</strong> = marki klienta wyciągnięte z „Pozostałe" — wypadły poza Top 10 (niższa sprzedaż), ale klient je wskazał, więc pokazujemy je osobno zamiast chować w zbiorczym wierszu. Wiersz „Pozostałe" już ich <strong>nie liczy</strong> (bez podwójnego liczenia). Marki, które wcześniej w ogóle nie przeszły progu sprzedaży, nie są tu widoczne.</div>
+    <table class="heatmap" id="brandRevHeatmap"><thead><tr><th>Marka</th><th class="num">DE</th><th class="num">FR</th><th class="num">IT</th><th class="num" style="border-left:2px solid #e2e8f0">Razem</th></tr></thead><tbody></tbody></table>
+    <div style="margin-top:10px;font-size:.68rem;color:#64748b">Top 10 marek po łącznej sprzedaży 12 mies. + marki klienta z „Pozostałe" + zbiorczy wiersz „Pozostałe". Ciemne komórki = marka dominuje na tym rynku.</div>
+  </div>
+  <div class="card">
+    <h3>Sztuki wg marki i rynku &mdash; 12 mies.</h3>
+    <div class="hm-legend"><strong>Jak czytać:</strong> <strong>pogrubione</strong> marki to konkurenci wskazani przez klienta. <span class="sw" style="background:#fef9c3;border:1px solid #fcd34d"></span><strong>Żółte tło</strong> = marki klienta wyciągnięte z „Pozostałe" — wypadły poza Top 10 (niższa sprzedaż), ale klient je wskazał, więc pokazujemy je osobno zamiast chować w zbiorczym wierszu. Wiersz „Pozostałe" już ich <strong>nie liczy</strong> (bez podwójnego liczenia). Marki, które wcześniej w ogóle nie przeszły progu sprzedaży, nie są tu widoczne.</div>
+    <table class="heatmap" id="brandUnitsHeatmap"><thead><tr><th>Marka</th><th class="num">DE</th><th class="num">FR</th><th class="num">IT</th><th class="num" style="border-left:2px solid #e2e8f0">Razem</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>Sezonowość kategorii (wspólna krzywa) &mdash; 12 mies.</h3>
+    <div class="season-desc">
+      <strong>Jak liczymy sezonowość (to oszacowanie, nie dane 1:1):</strong>
+      Krzywa pokazuje, <strong>w których miesiącach</strong> kategoria sprzedaje więcej, a w których mniej &mdash; nie ile sztuk, tylko <em>kiedy</em>.
+      <ul>
+        <li>Liczymy ją <strong>tylko z plików sprzedaży (sztuki) z Helium 10</strong>, które udało się zebrać &mdash; nie każdy produkt takie dane ma.</li>
+        <li>Bierzemy <strong>wyłącznie produkty z min. 12 miesiącami historii</strong>; produkty z np. 3 miesiącami pomijamy (za krótkie, żeby pokazać cały rok).</li>
+        <li>To <strong>nie są dane wszystkich konkurentów</strong> &mdash; w 100% pewna sezonowość wymagałaby realnych danych od wszystkich sprzedawców (np. z Sellerboard). Tutaj mamy próbkę.</li>
+        <li><strong>Założenie:</strong> cała kategoria rusza się podobnie &mdash; produkt o wolniejszej sprzedaży ma <strong>ten sam rytm miesięcy</strong> co bestseller, bo liczy się <em>kiedy</em> ludzie kupują, a nie ile sztuk.</li>
+      </ul>
+      <strong>Dlaczego mnożnik nie wynosi 12?</strong> Zmierzyliśmy sprzedaż tylko z <strong>jednego miesiąca (maj)</strong> i chcemy z niej policzyć cały rok. Gdyby każdy miesiąc sprzedawał tyle samo, mnożnik wynosiłby ×12. Ale maj jest <strong>mocniejszy niż przeciętny miesiąc</strong>, więc nie można go po prostu pomnożyć ×12 — słabsze miesiące ściągają roczną sumę w dół. Dlatego dla tej kategorii mnożnik to <strong>×10.1</strong>, a nie ×12.
+    </div>
+    <div class="season-note" id="seasonNote"></div>
+    <div class="season-kpis" id="seasonKpis"></div>
+    <div class="chart-wrap"><canvas id="seasonChart"></canvas></div>
+    <div class="note">Indeks = sprzedaż danego miesiąca / średnia miesięczna (1.0 = miesiąc średni; 2.0 = dwukrotność; 0.5 = połowa). Zielony = powyżej średniej, pomarańczowy ≈ średnia, czerwony = poniżej.</div>
+  </div>
+  <div class="note">
+    <strong>Źródło danych:</strong> Jungle Scout (DE, FR) + Helium 10 X-Ray (IT) &mdash; snapshoty 30-dniowe (2026-06-11), zmerge'owane i odduplikowane per rynek; usunięte marki z łączną sprzedażą &lt;&euro;2 000/30 dni (DE/FR) / &lt;&euro;1 000/30 dni (IT). Metoda projekcji 12 mies. &mdash; patrz sekcja „Sezonowość" wyżej.
+    <strong>Waluta:</strong> EUR na wszystkich rynkach (DE/IT/FR) &mdash; bez przeliczeń kursowych.
+  </div>
+</div>
+<script>
+const D = {"markets": ["DE", "FR", "IT"], "marketColors": ["#2563eb", "#0891b2", "#7c3aed"], "revenue": [26505501, 7008696, 34425], "units": [1604684, 491437, 3031], "brandRevLabels": ["TSPRO", "HEELE", "HUNTER", "OneTigris", "rabbitgoo", "X XBEN", "HQSHNY", "Unique style paws", "Taglory", "Rudelkönig", "Generisch", "ADAPTIL", "Pozostałe (91)"], "brandRevValues": [3436136, 3012627, 2710311, 2075319, 1755221, 1283707, 1189998, 1058648, 949291, 925073, 755208, 728986, 13668097], "brandUnitsLabels": ["HEELE", "TSPRO", "HUNTER", "Taglory", "TagME", "Unique style paws", "rabbitgoo", "Generisch", "OneTigris", "Rudelkönig", "X XBEN", "TRIXIE", "Pozostałe (91)"], "brandUnitsValues": [274168, 145913, 126965, 101085, 89129, 88767, 84732, 81862, 81851, 72383, 68309, 44113, 839875], "brandPalette": ["#2563eb", "#dc2626", "#0891b2", "#d97706", "#7c3aed", "#16a34a", "#db2777", "#0284c7", "#ca8a04", "#059669", "#4f46e5", "#be123c", "#94a3b8"], "brandHm": {"TSPRO": {"rev": [2514628, 921508, 0], "units": [101473, 44440, 0]}, "HEELE": {"rev": [2573037, 439590, 0], "units": [241393, 32775, 0]}, "HUNTER": {"rev": [2710311, 0, 0], "units": [126965, 0, 0]}, "OneTigris": {"rev": [2028687, 46632, 0], "units": [80042, 1809, 0]}, "rabbitgoo": {"rev": [1424906, 330315, 0], "units": [68208, 16524, 0]}, "X XBEN": {"rev": [745362, 538345, 0], "units": [25711, 42598, 0]}, "HQSHNY": {"rev": [1189998, 0, 0], "units": [31453, 0, 0]}, "Unique style paws": {"rev": [1058648, 0, 0], "units": [88767, 0, 0]}, "Taglory": {"rev": [949291, 0, 0], "units": [101085, 0, 0]}, "Rudelkönig": {"rev": [925073, 0, 0], "units": [72383, 0, 0]}, "FREUDENTIER": {"rev": [726661, 0, 0], "units": [26421, 0, 0]}, "TagME": {"rev": [0, 682310, 0], "units": [0, 89129, 0]}, "haapaw": {"rev": [181057, 480676, 0], "units": [10734, 25721, 0]}, "Halti": {"rev": [471319, 60164, 0], "units": [23456, 4235, 0]}, "TRIXIE": {"rev": [466351, 0, 0], "units": [44113, 0, 0]}, "PETTOM": {"rev": [442677, 0, 0], "units": [40478, 0, 0]}, "Joytale": {"rev": [342414, 92877, 0], "units": [33938, 6638, 0]}, "ARING PET": {"rev": [269991, 0, 0], "units": [21255, 0, 0]}, "CollarDirect": {"rev": [221729, 28056, 0], "units": [18575, 2082, 0]}, "Suredoo": {"rev": [77981, 170209, 0], "units": [10562, 20010, 0]}, "lionto": {"rev": [137200, 56537, 0], "units": [15472, 5801, 0]}, "TRUE LOVE": {"rev": [0, 183248, 0], "units": [0, 13494, 0]}, "lionet paws": {"rev": [162325, 0, 0], "units": [12764, 0, 0]}, "elropet": {"rev": [155473, 0, 0], "units": [4487, 0, 0]}, "DOGWONG": {"rev": [131425, 0, 0], "units": [12987, 0, 0]}, "AUAUY": {"rev": [0, 121999, 0], "units": [0, 16665, 0]}, "TAGLORY": {"rev": [0, 105844, 0], "units": [0, 9905, 0]}, "Freudentier": {"rev": [77002, 0, 0], "units": [1991, 0, 0]}, "Mihqy": {"rev": [40694, 30513, 0], "units": [5245, 3882, 0]}, "JULIUS K-9": {"rev": [37716, 0, 0], "units": [2314, 0, 0]}, "Pozostałe (73)": {"rev": [6443545, 2719873, 34425], "units": [382412, 155729, 3031]}}, "hmOrder": ["TSPRO", "HEELE", "HUNTER", "OneTigris", "rabbitgoo", "X XBEN", "HQSHNY", "Unique style paws", "Taglory", "Rudelkönig", "FREUDENTIER", "TagME", "haapaw", "Halti", "TRIXIE", "PETTOM", "Joytale", "ARING PET", "CollarDirect", "Suredoo", "lionto", "TRUE LOVE", "lionet paws", "elropet", "DOGWONG", "AUAUY", "TAGLORY", "Freudentier", "Mihqy", "JULIUS K-9", "Pozostałe (73)"], "hmMeta": {"TSPRO": "cli", "HEELE": "cli", "HUNTER": "cli", "OneTigris": "cli", "rabbitgoo": "", "X XBEN": "", "HQSHNY": "", "Unique style paws": "", "Taglory": "cli", "Rudelkönig": "cli", "FREUDENTIER": "extra", "TagME": "extra", "haapaw": "extra", "Halti": "extra", "TRIXIE": "extra", "PETTOM": "extra", "Joytale": "extra", "ARING PET": "extra", "CollarDirect": "extra", "Suredoo": "extra", "lionto": "extra", "TRUE LOVE": "extra", "lionet paws": "extra", "elropet": "extra", "DOGWONG": "extra", "AUAUY": "extra", "TAGLORY": "extra", "Freudentier": "extra", "Mihqy": "extra", "JULIUS K-9": "extra", "Pozostałe (73)": "rest"}, "season": {"months": ["Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru", "Sty", "Lut", "Mar", "Kwi"], "idx": [1.187, 1.02, 1.013, 0.928, 0.796, 0.927, 0.949, 1.127, 0.927, 0.966, 1.082, 1.076], "peakMonth": "Maj", "peakVal": 1.19, "troughMonth": "Wrz", "troughVal": 0.8, "peakAvg": 1.19, "peakTrough": 1.49, "n": 13, "perMarket": {"DE": 8, "IT": 2, "FR": 3}, "mult": 10.1}};
+Chart.register(ChartDataLabels);
+const fmtM = v => '€'+(v>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(0)+'K');
+const fmtU = v => v>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(1)+'K';
+new Chart(barChart,{type:'bar',data:{labels:D.markets,datasets:[{data:D.revenue,backgroundColor:D.marketColors,borderRadius:4,borderSkipped:false}]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+  tooltip:{callbacks:{label:ctx=>' €'+ctx.parsed.y.toLocaleString('en-EU',{maximumFractionDigits:0})}},
+  datalabels:{anchor:'end',align:'end',formatter:fmtM,font:{size:11,weight:'600'},color:'#1e293b'}},
+  layout:{padding:{top:22}},scales:{x:{grid:{display:false}},y:{grid:{color:'#e2e8f0'},ticks:{callback:fmtM}}}}});
+new Chart(pieChart,{type:'doughnut',data:{labels:D.markets,datasets:[{data:D.units,backgroundColor:D.marketColors,borderWidth:2,borderColor:'#fff'}]},
+ options:{responsive:true,maintainAspectRatio:false,cutout:'52%',plugins:{
+  legend:{position:'bottom',labels:{font:{size:11},padding:10,boxWidth:12,boxHeight:12,generateLabels:c=>{const t=D.units.reduce((a,b)=>a+b,0);return D.markets.map((l,i)=>({text:l+'  '+(D.units[i]/t*100).toFixed(1)+'%',fillStyle:D.marketColors[i],strokeStyle:D.marketColors[i],lineWidth:0,index:i}));}}},
+  tooltip:{callbacks:{label:ctx=>{const t=D.units.reduce((a,b)=>a+b,0);return ' '+ctx.parsed.toLocaleString()+' szt ('+(ctx.parsed/t*100).toFixed(1)+'%)';}}},
+  datalabels:{display:ctx=>(ctx.dataset.data[ctx.dataIndex]/D.units.reduce((a,b)=>a+b,0))>0.05,formatter:(v)=>{const t=D.units.reduce((a,b)=>a+b,0);return (v/t*100).toFixed(1)+'%';},color:'#fff',font:{size:11,weight:'700'}}}}});
+function brandPie(id,labels,values,fmt){const total=values.reduce((a,b)=>a+b,0);new Chart(document.getElementById(id),{type:'doughnut',
+ data:{labels,datasets:[{data:values,backgroundColor:D.brandPalette,borderWidth:2,borderColor:'#fff'}]},
+ options:{responsive:true,maintainAspectRatio:false,cutout:'52%',plugins:{
+  legend:{position:'right',labels:{font:{size:10},padding:6,boxWidth:10,boxHeight:10,generateLabels:c=>labels.map((l,i)=>({text:l+'  '+(values[i]/total*100).toFixed(1)+'%',fillStyle:D.brandPalette[i%D.brandPalette.length],strokeStyle:D.brandPalette[i%D.brandPalette.length],lineWidth:0,index:i}))}},
+  tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.parsed)+' ('+(ctx.parsed/total*100).toFixed(1)+'%)'}},
+  datalabels:{display:ctx=>(ctx.dataset.data[ctx.dataIndex]/total)>0.03,formatter:v=>(v/total*100).toFixed(1)+'%',color:'#fff',font:{size:10,weight:'700'}}}}});}
+brandPie('brandRevPie',D.brandRevLabels,D.brandRevValues,fmtM);
+brandPie('brandUnitsPie',D.brandUnitsLabels,D.brandUnitsValues,fmtU);
+const HM_COLORS=['#eff6ff','#bfdbfe','#93c5fd','#3b82f6','#1d4ed8'];const HM_TEXT=['#1e40af','#1e40af','#1e3a5f','#fff','#fff'];
+function hmColor(v,max){if(v===0)return{bg:'#f8fafc',fg:'#94a3b8'};const i=Math.min(4,Math.floor((v/max)*4.99));return{bg:HM_COLORS[i],fg:HM_TEXT[i]};}
+function fmtRev(v){return v===0?'—':(v>=1e6?'€'+(v/1e6).toFixed(1)+'M':'€'+(v/1e3).toFixed(0)+'K');}
+function fmtUnits(v){return v===0?'—':(v>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(1)+'K');}
+function buildBrandHeatmap(tableId,field,fmt){const tbody=document.querySelector('#'+tableId+' tbody');let all=[];D.hmOrder.forEach(b=>D.brandHm[b][field].forEach(v=>{if(v>0)all.push(v);}));const max=all.length?Math.max(...all):1;
+ D.hmOrder.forEach(b=>{const vals=D.brandHm[b][field];const tot=vals.reduce((a,x)=>a+x,0);const meta=(D.hmMeta&&D.hmMeta[b])||'';const isCli=(meta==='cli'||meta==='extra');let tr='<td class="seg-label">'+(isCli?'<strong>'+b+'</strong>':b)+'</td>';vals.forEach(v=>{const c=hmColor(v,max);tr+='<td class="hm" style="background:'+c.bg+';color:'+c.fg+'">'+fmt(v)+'</td>';});tr+='<td class="hm-total">'+fmt(tot)+'</td>';const row=document.createElement('tr');if(meta==='cli')row.className='hm-cli';else if(meta==='extra')row.className='hm-extra';row.innerHTML=tr;tbody.appendChild(row);});
+ const n=D.markets.length;const totals=Array(n).fill(0).map((_,i)=>D.hmOrder.reduce((s,b)=>s+D.brandHm[b][field][i],0));const gt=totals.reduce((a,b)=>a+b,0);
+ let tr='<td class="seg-label">Razem</td>';totals.forEach(v=>{tr+='<td class="hm" style="background:#f8fafc;color:#0f2942">'+fmt(v)+'</td>';});tr+='<td class="hm-total">'+fmt(gt)+'</td>';const row=document.createElement('tr');row.className='total-row';row.innerHTML=tr;tbody.appendChild(row);}
+buildBrandHeatmap('brandRevHeatmap','rev',fmtRev);
+buildBrandHeatmap('brandUnitsHeatmap','units',fmtUnits);
+function barColor(v){return v>=1.1?'#16a34a':(v>=0.9?'#d97706':'#dc2626');}
+(function renderSeason(){
+  const s=D.season;const note=document.getElementById('seasonNote');const kpis=document.getElementById('seasonKpis');
+  if(!s){note.textContent='Brak danych sprzedażowych do krzywej sezonowości.';kpis.innerHTML='';return;}
+  const perM=Object.entries(s.perMarket||{}).map(([k,v])=>k+' '+v).join(' · ');
+  note.innerHTML='Krzywa oparta na <strong>'+s.n+'</strong> plikach sprzedaży (per rynek: '+perM+'). Pierwszy słupek = maj (miesiąc snapshotu X-Ray i JS).';
+  kpis.innerHTML=
+    '<div class="season-kpi"><div class="v" style="color:#16a34a">'+s.peakMonth+' ('+s.peakVal+')</div><div class="l">Miesiąc szczytowy</div></div>'+
+    '<div class="season-kpi"><div class="v" style="color:#dc2626">'+s.troughMonth+' ('+s.troughVal+')</div><div class="l">Miesiąc dołka</div></div>'+
+    '<div class="season-kpi"><div class="v">'+s.peakAvg+'×</div><div class="l">Szczyt / średnia</div></div>'+
+    '<div class="season-kpi"><div class="v">'+s.peakTrough+'×</div><div class="l">Szczyt / dołek</div></div>';
+  new Chart(document.getElementById('seasonChart'),{type:'bar',
+    data:{labels:s.months,datasets:[{data:s.idx,backgroundColor:s.idx.map(barColor),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.y.toFixed(2)+'× średniej'}},
+      datalabels:{anchor:'end',align:'end',formatter:v=>v.toFixed(1)+'×',font:{size:10,weight:'600'},color:'#475569'}},
+      layout:{padding:{top:18}},scales:{x:{grid:{display:false}},y:{grid:{color:'#e2e8f0'},ticks:{callback:v=>v.toFixed(1)+'×'},suggestedMax:Math.max(...s.idx)*1.15}}}});
+})();
+</script>
+</body>
+</html>

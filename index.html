@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milosz Analytics — Dashboardy</title>
+<link rel="stylesheet" href="css/hub.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+</head>
+<body>
+<!-- Bramka hasłem (ochrona lekka, klient-side) -->
+<div id="pwgate" style="position:fixed;inset:0;z-index:99999;background:#0f2942;display:flex;align-items:center;justify-content:center;font-family:system-ui,'Segoe UI',Arial,sans-serif">
+  <div style="background:#fff;padding:34px 38px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:320px;text-align:center">
+    <h2 style="margin:0 0 6px;color:#0f2942;font-size:1.25rem">Milosz Analytics</h2>
+    <p style="margin:0 0 18px;color:#64748b;font-size:.85rem">Wpisz hasło, aby zobaczyć dashboardy</p>
+    <input id="pwinput" type="password" placeholder="Hasło" style="width:100%;box-sizing:border-box;padding:11px 13px;border:1px solid #cbd5e1;border-radius:8px;font-size:.95rem;margin-bottom:10px">
+    <button id="pwbtn" style="width:100%;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">Wejdź</button>
+    <p id="pwerr" style="display:none;margin:10px 0 0;color:#dc2626;font-size:.8rem">Nieprawidłowe hasło</p>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='milosz_gate_ok', PW='milosz2026';
+  function open_(){var g=document.getElementById('pwgate'); if(g) g.remove();}
+  if(sessionStorage.getItem(KEY)==='1'){open_(); return;}
+  function tryPw(){
+    if(document.getElementById('pwinput').value===PW){sessionStorage.setItem(KEY,'1'); open_();}
+    else{document.getElementById('pwerr').style.display='block';}
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.getElementById('pwbtn'), i=document.getElementById('pwinput');
+    if(b) b.addEventListener('click',tryPw);
+    if(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')tryPw();}); i.focus();}
+  });
+})();
+</script>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <div>
+      <h1 class="sidebar-title">Milosz Analytics</h1>
+      <p class="sidebar-subtitle">Dashboardy Amazon</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <!-- Wypełniane przez hub.js -->
+  </nav>
+
+  <div class="sidebar-footer" id="sidebarFooter" style="display:none">
+    <button class="btn-add" id="btnAddDashboard">+ Dodaj dashboard</button>
+  </div>
+</aside>
+
+<!-- Sidebar toggle (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Pokaż / ukryj menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+</button>
+
+<!-- Main content -->
+<main class="main-content" id="mainContent">
+  <div class="empty-state" id="emptyState">
+    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <p>Wybierz dashboard z menu po lewej, aby zobaczyć analizę</p>
+    <p style="font-size:.78rem;color:#94a3b8;margin-top:8px">Konsola Miłosz · pusty szablon (do uzupełnienia)</p>
+  </div>
+
+  <div id="dashboardContainer" style="display:none"></div>
+
+  <div class="loading" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <p>Ładowanie dashboardu...</p>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script src="js/data-engine.js"></script>
+<script src="js/hub.js"></script>
+</body>
+</html>
