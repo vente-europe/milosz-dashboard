@@ -23,6 +23,13 @@ window.HUB_CONFIG = {
       "file": "index.html"
     },
     {
+      "id": "Lapy-spray",
+      "title": "Spray na rany / łapy dla zwierząt — Top Line (DE/ES/IT/UK)",
+      "group": "topline",
+      "template": "standalone",
+      "file": "index.html"
+    },
+    {
       "id": "szelki-detailed",
       "title": "Szelki dla psa — Szczegółowy (DE/IT/FR)",
       "group": "detailed",

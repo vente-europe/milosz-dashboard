@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spray na rany / łapy dla zwierząt — Top Line (DE · ES · IT · UK)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto;padding:0 20px 60px}
+header{background:#0f2942;color:#fff;padding:22px 0;margin-bottom:26px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+header h1{font-size:1.4rem;font-weight:700}
+header .sub{font-size:.82rem;color:#94a3b8;margin-top:4px}
+.xray-btns{display:flex;gap:8px;flex-wrap:wrap}
+.xray-btns a{background:#16a34a;color:#fff;text-decoration:none;font-size:.72rem;font-weight:600;padding:7px 11px;border-radius:6px;white-space:nowrap}
+.xray-btns a:hover{background:#15803d}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:26px}
+.kpi{background:#fff;border-radius:10px;padding:18px 16px;box-shadow:0 1px 3px rgba(0,0,0,.07);border-left:4px solid #2563eb}
+.kpi .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:#64748b;font-weight:600}
+.kpi .val{font-size:1.55rem;font-weight:800;margin-top:6px;color:#0f2942}
+.kpi .note{font-size:.68rem;color:#94a3b8;margin-top:3px}
+.card{background:#fff;border-radius:10px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:22px}
+.card h2{font-size:1.05rem;color:#1e293b;margin-bottom:4px}
+.card .desc{font-size:.78rem;color:#64748b;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.chart-box{position:relative;height:300px}
+.method{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;margin-bottom:22px;font-size:.8rem;color:#1e3a5f}
+.method b{color:#0f2942}
+.method .pl{color:#475569;margin-top:8px;display:block;font-size:.76rem}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th,td{padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right}
+th{background:#f8fafc;font-weight:700;color:#475569;cursor:pointer;white-space:nowrap;position:sticky;top:0}
+th.l,td.l{text-align:left}
+tbody tr:hover{background:#f8fafc}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.68rem;font-weight:700;color:#fff}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.pill{padding:8px 16px;border-radius:20px;border:1px solid #cbd5e1;background:#fff;font-size:.8rem;font-weight:600;cursor:pointer;color:#475569}
+.pill.active{color:#fff;border-color:transparent}
+.flag{font-size:1rem;margin-right:5px}
+.muted{color:#94a3b8;font-size:.72rem}
+.scroll{max-height:560px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px}
+a.plink{color:#2563eb;text-decoration:none}
+a.plink:hover{text-decoration:underline}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div>
+      <h1>Spray na rany / łapy dla zwierząt — Top Line</h1>
+      <div class="sub">Niemcy · Hiszpania · Włochy · Wlk. Brytania &nbsp;|&nbsp; Źródło: Helium 10 X-Ray (snapshot 30 dni × 12 = projekcja 12 mies.) &nbsp;|&nbsp; przychód na poziomie rodziny, odduplikowany</div>
+    </div>
+    <div class="xray-btns" id="xrayBtns"></div>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="method">
+    <b>Jak liczymy wielkość rynku — na poziomie rodziny (Parent Level), odduplikowanej.</b>
+    Każdy rynek pooluje kilkanaście przeszukiwań słów kluczowych; identyczne ASIN-y są scalane (zostaje wiersz z wyższym przychodem).
+    Amazon powiela <i>tę samą estymację sprzedaży rodziny</i> na każdym wariancie (kolor/rozmiar/zapach), a eksport pokazuje tylko część
+    wariantów rodziny — więc proste sumowanie ASIN-ów jednocześnie zawyża i zaniża. Zamiast tego każda rodzina wariantów liczona jest
+    <b>raz</b> wg <b>Parent Level Revenue</b> (wiersze o tej samej marce + Parent Level Sales + Parent Level Revenue zwijamy do jednej wartości).
+    Wartości to projekcje 12-miesięczne (snapshot 30 dni × 12). <b>Waluta: EUR</b> — rynek UK przeliczony z £ po kursie
+    <b>1&nbsp;GBP&nbsp;=&nbsp;1.16&nbsp;EUR</b> (kurs edytowalny w skrypcie). <i>Bez segmentacji</i> — na razie cały produkt to jedna pula.
+    <span class="pl"><b>Uwaga:</b> to oszacowanie top-level do porównania rynków, a nie twarde dane sprzedażowe wszystkich sprzedawców.</span>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Sprzedaż (€) wg rynku — 12 mies.</h2>
+      <div class="desc">Przychód na poziomie rodziny, projekcja 12 mies.</div>
+      <div class="chart-box"><canvas id="revBar"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Udział w sprzedaży wg rynku — 12 mies.</h2>
+      <div class="desc">Udział w łącznym przychodzie 4 rynków</div>
+      <div class="chart-box"><canvas id="revPie"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Sztuki wg rynku — 12 mies.</h2>
+      <div class="desc">Sztuki na poziomie rodziny, projekcja 12 mies.</div>
+      <div class="chart-box"><canvas id="unitsBar"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Top marki — pooled 4 rynki (sprzedaż € 12 mies.)</h2>
+      <div class="desc">Wszystkie 4 rynki razem, top 12 marek</div>
+      <div class="chart-box"><canvas id="brandBar"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Podsumowanie rynków</h2>
+    <div class="desc">Jeden wiersz na rynek — rodziny liczone na poziomie Parent Level</div>
+    <table id="summaryTbl"></table>
+  </div>
+
+  <div class="card">
+    <h2>Top 20 produktów wg rynku</h2>
+    <div class="desc">Sortowane wg przychodu 12 mies. (Parent Level). „Warianty" = liczba wariantów rodziny widocznych w eksporcie.</div>
+    <div class="pills" id="prodPills"></div>
+    <div class="scroll"><table id="prodTbl"></table></div>
+  </div>
+
+  <div class="method" style="background:#f8fafc;border-color:#e2e8f0;color:#475569">
+    <b>Źródło danych:</b> Helium 10 X-Ray, snapshot 30-dniowy (2026-06-30), zmerge'owany i odduplikowany po ASIN per rynek.
+    Rodziny wariantów liczone raz (Parent Level). Projekcja 12 mies. = 30 dni × 12 (płasko — brak plików sprzedaży do krzywej sezonowości).
+    <b>Waluta:</b> EUR; DE/ES/IT natywnie w €, UK przeliczony z £ po kursie 1 GBP = 1.16 EUR.
+  </div>
+
+</div>
+
+<script>
+const D = {"xrayDate": "2026-06-30", "gbpEur": 1.16, "markets": [{"code": "UK", "name": "Wlk. Brytania", "flag": "🇬🇧", "color": "#16a34a", "cur": "GBP", "tld": "co.uk", "xray": "#", "raw_rows": 200, "asin_rows": 79, "families": 64, "rev12m": 5818448, "units12m": 469440, "brands": 43, "avg_price": 12.39, "fams": [{"asin": "B00J69NSHI", "brand": "Leucillin", "title": "Leucillin Natural Antiseptic Spray 150ml - Antibacterial Antifungal Antiviral for Dogs Cats All Animals Itchy Skin Minor Wound Care and Skin Health | 150ml", "price": 12.19, "rev12m": 1801051, "units12m": 147720, "rating": 4.6, "reviews": 20686, "variants": 3}, {"asin": "B0DV4N4HVG", "brand": "BUGALUGS", "title": "BUGALUGS Itch & Immunity Antiseptic Spray – Helps Soothe Itchy Skin, Paws, Ears - Licking, Scratching - Perfect for Small, Medium & Large Dogs", "price": 18.47, "rev12m": 1065810, "units12m": 57708, "rating": 4.4, "reviews": 1823, "variants": 1}, {"asin": "B01H2IYD46", "brand": "RenaSan", "title": "RenaSan Animal First Aid Spray (100ml) – Wound Disinfection, Kills Bacteria & Stops Itching, Alcohol-Free, Non-irritating, for Dogs, Cats & all other animals.", "price": 11.33, "rev12m": 844988, "units12m": 74532, "rating": 4.5, "reviews": 6063, "variants": 6}, {"asin": "B01M2779PK", "brand": "Safe + Sound", "title": "Safe & Sound Antiseptic Spray – 100ml | Cleansing Spray for Minor Wounds, Cuts & Skin Irritations", "price": 5.73, "rev12m": 209022, "units12m": 36456, "rating": 4.5, "reviews": 1045, "variants": 1}, {"asin": "B06WP7LGPT", "brand": "Vetericyn", "title": "Vetericyn Wound and Skincare - Liquid Spray - 89ml, package may vary", "price": 15.14, "rev12m": 200299, "units12m": 13236, "rating": 4.5, "reviews": 11080, "variants": 1}, {"asin": "B08RJYKSK5", "brand": "Institut Katharos", "title": "Colloidal Silver Antiseptic Spray All-in-1 Treatment: Dogs & Cats ● Skin Issues Relief (Itchy, Allergy, hotspot, Yeast, Dry) ● 100% Natural Antibiotic ● Fights Infection (Ear, Eye) ● Pets Wound Care", "price": 15.02, "rev12m": 194902, "units12m": 12972, "rating": 4.4, "reviews": 6860, "variants": 1}, {"asin": "B0FBQBY6CX", "brand": "VetSet", "title": "Silver Aluminium Spray for Animal Wounds | Veterinary Antiseptic Silver Spray for Horses, Dogs, Livestock & Equine Use | Breathable Protective Coating for External Wounds & Abrasions, 250ml", "price": 23.42, "rev12m": 167479, "units12m": 7152, "rating": 4.7, "reviews": 54, "variants": 3}, {"asin": "B075WWYHK7", "brand": "C&G Pets", "title": "Dog Itch Relief Spray 500ML – Antibacterial Antifungal & Antiviral Fast Absorbing Antiseptic Skin Treatment for Dogs – Natural Soothing Formula with Coconut, Citrus, Avocado & Clove by Cooper & Gracie", "price": 15.08, "rev12m": 114150, "units12m": 7572, "rating": 4.2, "reviews": 2583, "variants": 1}, {"asin": "B0D16XYK31", "brand": "TONISABERY", "title": "Pet Wound Care Gel, Liquid-Bandage for Pet, Wound Care Gel for Dogs, Cats&Other Pets, Dog Leg Wound Protector, Waterproof Protective Wound Spray for Pet, Cat Gel, Cat Wound Cream, Dog Wound Care, Wound Glue", "price": 7.67, "rev12m": 102431, "units12m": 13356, "rating": 4.2, "reviews": 272, "variants": 1}, {"asin": "B09RKNJXNP", "brand": "RenaSan", "title": "RenaSan Animal Antiseptic Gel (100ml) – Wound Disinfection, Kills Bacteria & Stops Itching, Veterinary-grade Skin Protection, Alcohol-Free, Non-irritating, for Dogs, Cats & all other animals", "price": 11.59, "rev12m": 86253, "units12m": 7440, "rating": 4.5, "reviews": 970, "variants": 1}, {"asin": "B00DMAJV7I", "brand": "ICF", "title": "ICF | Clorexyderm 4% Solution Spray for Dogs & Cats | Vet-Recommended No-Rinse Skin Cleanser & Conditioner, 200ml", "price": 24.26, "rev12m": 68388, "units12m": 2820, "rating": 4.5, "reviews": 547, "variants": 1}, {"asin": "B0DQVBFWNH", "brand": "ChitoTech", "title": "SilvoSept Antiseptic Spray for Wounds 100ml – Nano Colloidal Silver Wound Spray, Antibacterial Spray for Skin, Wound Healing Ointment & Disinfectant Spray for Skin", "price": 10.29, "rev12m": 66541, "units12m": 6468, "rating": 4.4, "reviews": 71, "variants": 1}, {"asin": "B08J7BG4S4", "brand": "Leucillin", "title": "Leucillin Natural Antiseptic Spray (2 Pack) - Antibacterial Antifungal Antiviral for Dogs Cats All Animals Itchy Skin Minor Wound Care and Skin Health | 500ml", "price": 23.22, "rev12m": 60762, "units12m": 2616, "rating": 4.7, "reviews": 688, "variants": 1}, {"asin": "B0BYW3BBXS", "brand": "BUGALUGS", "title": "BUGALUGS First Aid Pet Antiseptic spray for dogs, puppy & cats 200ml - Antibacterial, Antiviral, Antifungal spray for cuts, wounds & itchy skin", "price": 10.43, "rev12m": 59172, "units12m": 5676, "rating": 4.6, "reviews": 314, "variants": 1}, {"asin": "B0DK9RKVZ8", "brand": "arlo.", "title": "Purple Spray Wound Cleanser 300ml Gentian Violet Alternative Antibacterial Non Sting Animal First Aid for Horses Pets Livestock Poultry", "price": 12.76, "rev12m": 57126, "units12m": 4476, "rating": 4.4, "reviews": 235, "variants": 1}, {"asin": "B071DQZCXD", "brand": "Vetericyn", "title": "Vetericyn Wound and Skincare - Hydrogel Spray - 89ml, Packaging may vary", "price": 20.31, "rev12m": 55087, "units12m": 2712, "rating": 4.3, "reviews": 637, "variants": 1}, {"asin": "B09VQ149QV", "brand": "Beaphar", "title": "Beaphar - Derma+ Wound Cream for Pets 30ml – First aid soothing cream with honey, Aloe vera & turmeric - Supports skin recovery, wound healing & soothes dry & irritated skin - Suitable for all pets", "price": 5.7, "rev12m": 52714, "units12m": 9252, "rating": 4.4, "reviews": 490, "variants": 1}, {"asin": "B00LCPPX7M", "brand": "Leucillin", "title": "Leucillin Natural Antiseptic Dropper - Antibacterial, Antifungal & Antiviral Ear Drops & Eye Drops for Dogs, Cats & All Animals, for All Skin Care Health (50ml)", "price": 7.48, "rev12m": 51591, "units12m": 6900, "rating": 4.5, "reviews": 2190, "variants": 1}, {"asin": "B0C6FK4JGQ", "brand": "Leucillin", "title": "Leucillin 60ml Natural Antiseptic Spray - Antibacterial Antifungal Antiviral for Dogs Cats All Animals Itchy Skin Minor Wound Care and Skin Health", "price": 8.35, "rev12m": 42201, "units12m": 5052, "rating": 4.6, "reviews": 80, "variants": 1}, {"asin": "B08Z79R6ZK", "brand": "C&G Pets", "title": "C&G Pets Dog Itch Spray for Skin Relief - Antibacterial Anti-Fungal Itchy Dog Spray for Skin Relief | Fast-Absorbing Antiseptic Spray for Dog Itchy Skin, Soothing Itch Relief by Cooper and Gracie", "price": 12.74, "rev12m": 39570, "units12m": 3108, "rating": 4.2, "reviews": 1054, "variants": 1}], "topBrands": [{"brand": "Leucillin", "rev12m": 1993522, "units12m": 164076, "families": 5}, {"brand": "BUGALUGS", "rev12m": 1124982, "units12m": 63384, "families": 2}, {"brand": "RenaSan", "rev12m": 943619, "units12m": 82236, "families": 3}, {"brand": "Vetericyn", "rev12m": 288195, "units12m": 17964, "families": 3}, {"brand": "Safe + Sound", "rev12m": 209022, "units12m": 36456, "families": 1}, {"brand": "Institut Katharos", "rev12m": 194902, "units12m": 12972, "families": 1}, {"brand": "VetSet", "rev12m": 189681, "units12m": 8436, "families": 3}, {"brand": "C&G Pets", "rev12m": 153720, "units12m": 10680, "families": 2}, {"brand": "TONISABERY", "rev12m": 102431, "units12m": 13356, "families": 1}, {"brand": "arlo.", "rev12m": 74619, "units12m": 6252, "families": 2}]}, {"code": "DE", "name": "Niemcy", "flag": "🇩🇪", "color": "#2563eb", "cur": "EUR", "tld": "de", "xray": "#", "raw_rows": 159, "asin_rows": 87, "families": 76, "rev12m": 2771142, "units12m": 250392, "brands": 47, "avg_price": 11.07, "fams": [{"asin": "B01G3CMLQ4", "brand": "Canosept", "title": "Canosept Wound Spray, 75 ml", "price": 11.95, "rev12m": 512434, "units12m": 42888, "rating": 4.7, "reviews": 4453, "variants": 3}, {"asin": "B0CYCP44LM", "brand": "Felisept", "title": "Felisept Wound Spray for Cats 75 ml - Cat Wound Spray for Cleaning Wounds, Skin and Villains - Wound Care Cat - Easy to Use and Painless for the Cat", "price": 9.6, "rev12m": 390387, "units12m": 40656, "rating": 4.6, "reviews": 294, "variants": 4}, {"asin": "B08RJYKSK5", "brand": "Institut Katharos", "title": "Colloidal Silver Spray of the Highest Quality for Pets, Silver Spray for Animals (Dog, Cat, Horse) Versatile Health Products, 100 ml Wound Spray and Agent Against Itching (Mites)", "price": 13.95, "rev12m": 289554, "units12m": 20760, "rating": 4.4, "reviews": 6915, "variants": 1}, {"asin": "B09NBVM2XJ", "brand": "flint Med", "title": "flint Med Spray Plaster - Seals and Protects Wound Waterproof Breathable Elastic and Transparent Plaster Spray Clinically Proven Up to 80 Applications 50ml", "price": 4.77, "rev12m": 202116, "units12m": 42372, "rating": 4.6, "reviews": 1733, "variants": 1}, {"asin": "B07ZMDD9XX", "brand": "Canosept", "title": "Canosept Skin care spray for dogs, 250 ml, regenerates the skin for itching, vermin infestation, mites, irritation and inflammation", "price": 8.43, "rev12m": 171746, "units12m": 20376, "rating": 4.2, "reviews": 4417, "variants": 1}, {"asin": "B09LVJMFHC", "brand": "Hundepflege24", "title": "Dog Wound Spray - Disinfects, Soothes, Nourishes & Protects Wounds of All Types without Burning - 125 ml with Proven Active Ingredients Wound Spray for Dogs - Care & Wound Disinfection Dog", "price": 13.0, "rev12m": 79567, "units12m": 6120, "rating": 4.5, "reviews": 346, "variants": 1}, {"asin": "B0BXXKQHK3", "brand": "KATZENPFLEGE24", "title": "Wound Spray for Cats 125 ml - Octenidine Wound Disinfection & Wound Care - Alcohol Free, Does Not Burn - Gentle for Sensitive Cat Skin - For Wounds & Scratches", "price": 12.99, "rev12m": 62976, "units12m": 4848, "rating": 4.5, "reviews": 388, "variants": 1}, {"asin": "B0B9T5T23Z", "brand": "Alfavet", "title": "alfavet VulnoCyn Spray 75 ml - Skin and Wound Spray for Dogs, Cats & Small Mammals - Against Bacteria, Viruses & Fungi - Alcohol-free, Skin-friendly & pH Neutral for Antiseptic Wound Cleaning", "price": 17.88, "rev12m": 58564, "units12m": 3276, "rating": 4.5, "reviews": 171, "variants": 2}, {"asin": "B0B9T96KD9", "brand": "Alfavet", "title": "alfavet VulnoCyn Hydrogel 75 ml - Skin & Wound Spray for Dogs, Cats & Small Mammals - Wound Spray Against Bacteria, Viruses & Fungi - Hydrogel with Long-Lasting Effect, pH Neutral & Alcohol Free", "price": 23.57, "rev12m": 58546, "units12m": 2484, "rating": 4.6, "reviews": 132, "variants": 2}, {"asin": "B08L86WM24", "brand": "Annimally", "title": "Dog Cod Liver Oil Zinc Ointment 50 g I Wound Ointment for Injuries, Eczema and Lying Quoles - Balm for Dogs, Cats, Horses & Small Animals with Zinc, Cod Liver Oil and Calendula Oil", "price": 9.95, "rev12m": 51319, "units12m": 5160, "rating": 4.5, "reviews": 630, "variants": 1}, {"asin": "B0BWNRNFVB", "brand": "Rebohexan", "title": "Gel 20 ml for Pets: Antibacterial Wound Care, Nourishes and Cleanses the Skin and Supports a Hygienic Environment, Skin-friendly, Easy to Use", "price": 14.21, "rev12m": 45533, "units12m": 3204, "rating": 4.4, "reviews": 173, "variants": 1}, {"asin": "B00HAFPC60", "brand": "Natur Total", "title": "Colloidal Silver Spray for Dogs, Cats & Horses 1000 ml | 100 PPM Real Silver Instead of Aluminium | Wound Spray for Hot Spot, Itching, Mauke, Eczema | Made in Germany | Stallapotheke", "price": 18.94, "rev12m": 42959, "units12m": 2268, "rating": 4.6, "reviews": 443, "variants": 1}, {"asin": "B0C4JVYFKD", "brand": "BMUT", "title": "BMUT 1 x 100 ml Colloidal Silver Spray for Pets - Dog, Cat, Horse - Wound Spray - Against Itching - Mites - 40 ppm", "price": 8.89, "rev12m": 42017, "units12m": 4728, "rating": 4.4, "reviews": 317, "variants": 1}, {"asin": "B0CRF3MZBW", "brand": "LILA LOVES IT", "title": "LILA LOVES IT Silver Cream for Dogs - Acute Care with Aloe Vera, Shea Butter and Micro Silver, Nano-Free, Soothes and Nourishes Irritated Dog Skin Intensively, Silver Cream, 30 ml", "price": 20.14, "rev12m": 41564, "units12m": 2064, "rating": 4.5, "reviews": 71, "variants": 2}, {"asin": "B07T6G56X5", "brand": "EMMA", "title": "Silver Spray for Animals, Wound Spray for Wound Protection, Horse, Dog, Cat, Silver Spray Wound Healing, Aluminium Spray Wound Disinfection, Spray Plaster, Breathable, Spray Dressing, Wound Care 200 ml", "price": 15.71, "rev12m": 39395, "units12m": 2508, "rating": 4.6, "reviews": 702, "variants": 1}, {"asin": "B0D9K93YN8", "brand": "Annimally", "title": "Annimally Zinc Spray for Horses 200 ml - Breathable Wound Cover with Zinc Oxide, Lanolin & Allantoin to Cover Wounds - Protection Against Germs & Care for Eczema", "price": 13.39, "rev12m": 39049, "units12m": 2916, "rating": 4.6, "reviews": 69, "variants": 1}, {"asin": "B0FSL951PR", "brand": "Veddelholzer", "title": "Veddelholzer 500 ml Itching Spray for Dogs, Soothing Care Spray for Itching and Skin Irritation with Micro Silver, Aloe Vera & Marigold, Nourishing & Moisturising for All Coat Types", "price": 13.94, "rev12m": 36143, "units12m": 2592, "rating": 4.4, "reviews": 102, "variants": 1}, {"asin": "B000XUP1W4", "brand": "Kerbl", "title": "Chinoseptane Blue Spray 200 ml", "price": 11.44, "rev12m": 35138, "units12m": 3072, "rating": 4.6, "reviews": 235, "variants": 1}, {"asin": "B00E5AK8S0", "brand": "Pharmamedico GmbH", "title": "Schmees Aluminium Protective Spray Film and Breathable Skin Protection in Animals, 200 ml Solution", "price": 9.59, "rev12m": 35109, "units12m": 3660, "rating": 4.6, "reviews": 155, "variants": 1}, {"asin": "B0D3FJJ2BW", "brand": "Tom&Leo", "title": "Tom&Leo Colloidal Silver Spray for Pets | 250ml - 100pmm | Animals - Dog, Cat, Horse and More | Wound Spray and Itching Agent", "price": 11.95, "rev12m": 34408, "units12m": 2880, "rating": 4.5, "reviews": 66, "variants": 1}], "topBrands": [{"brand": "Canosept", "rev12m": 684180, "units12m": 63264, "families": 2}, {"brand": "Felisept", "rev12m": 390387, "units12m": 40656, "families": 1}, {"brand": "Institut Katharos", "rev12m": 300083, "units12m": 21468, "families": 2}, {"brand": "flint Med", "rev12m": 202116, "units12m": 42372, "families": 1}, {"brand": "Alfavet", "rev12m": 118167, "units12m": 5820, "families": 3}, {"brand": "EMMA", "rev12m": 92401, "units12m": 5676, "families": 13}, {"brand": "Annimally", "rev12m": 90368, "units12m": 8076, "families": 2}, {"brand": "Rebohexan", "rev12m": 82369, "units12m": 5628, "families": 3}, {"brand": "Hundepflege24", "rev12m": 79567, "units12m": 6120, "families": 1}, {"brand": "Kerbl", "rev12m": 66464, "units12m": 5988, "families": 3}]}, {"code": "ES", "name": "Hiszpania", "flag": "🇪🇸", "color": "#d97706", "cur": "EUR", "tld": "es", "xray": "#", "raw_rows": 196, "asin_rows": 91, "families": 81, "rev12m": 941046, "units12m": 81732, "brands": 57, "avg_price": 11.51, "fams": [{"asin": "B000BGYZ4K", "brand": "Vet's Best", "title": "Vet's Best Natural Allergy Itch Relief Dog Spray 250ml", "price": 15.46, "rev12m": 122056, "units12m": 7896, "rating": 4.3, "reviews": 14341, "variants": 1}, {"asin": "B01G3CMLQ4", "brand": "Canosept", "title": "Canosept Dog Wound Spray 75 ml – Disinfectant for Dogs – For Cleaning and Care of Wound Areas – Dog Antiseptic Spray – Dog Wounds – Scarring Dogs Spray", "price": 12.67, "rev12m": 74819, "units12m": 5904, "rating": 4.4, "reviews": 4263, "variants": 3}, {"asin": "B07CZ1R111", "brand": "Hansaplast", "title": "HANSAPLAST WOUND SPRAY 100 ML", "price": 4.28, "rev12m": 57220, "units12m": 13380, "rating": 4.5, "reviews": 524, "variants": 1}, {"asin": "B0D1GYFGCM", "brand": "MyPetPrime", "title": "MyPetPrime Healing Cream and Protector Pads | 5 000 ml | Paw Protector Dog | 100% Natural | Balm Pads Dog | with Almond Oil and Karite Butter", "price": 13.49, "rev12m": 52269, "units12m": 3876, "rating": 4.6, "reviews": 360, "variants": 1}, {"asin": "B07BX19PJC", "brand": "König", "title": "König 0000000009789 Bactrovet Healing Spray, 250 ml", "price": 16.97, "rev12m": 39517, "units12m": 2328, "rating": 4.6, "reviews": 611, "variants": 1}, {"asin": "B0DZPKMFL8", "brand": "ALUDERMIN", "title": "Spray 270ML for Animal Wounds", "price": 13.72, "rev12m": 37197, "units12m": 2712, "rating": 4.6, "reviews": 43, "variants": 1}, {"asin": "B07ZMDD9XX", "brand": "Canosept", "title": "Canosept Skin Care Spray 250ml - Dog Itching - Dog Wounds - Regenerates And Nourishes The Skin In Case Of Itching, Irritations And Redness - Especially Gentle", "price": 7.64, "rev12m": 33280, "units12m": 4356, "rating": 4.2, "reviews": 4638, "variants": 2}, {"asin": "B004Q8S7WU", "brand": "Prontolind", "title": "Prontolind Spray 75 ml | For antibacterial cleaning and care of piercings, tunnels, plugs and body modifications", "price": 7.44, "rev12m": 27398, "units12m": 3684, "rating": 4.5, "reviews": 22066, "variants": 1}, {"asin": "B07LG8VCQF", "brand": "OZONOVET 15 3", "title": "Ozonized Healing Gel for Dogs and Cats Relieves Itching Dermatitis Allergies Wounds and Burns - Healing Moisturizes Without Leaving Side Effects or Contraindications - 35 ml - 1 Unit", "price": 21.83, "rev12m": 26978, "units12m": 1236, "rating": 4.3, "reviews": 168, "variants": 1}, {"asin": "B07VWPH7X2", "brand": "Hifarmax", "title": "Omnimatrix Hifarmax Healing Cream for Dogs, Cats and Horses | Anti-Inflammatory for Dogs and Other Pets, Ideal for Wound Healing | Pad Cream | 20g Tube", "price": 17.07, "rev12m": 26841, "units12m": 1572, "rating": 4.6, "reviews": 187, "variants": 1}, {"asin": "B09V6RCRZM", "brand": "ConvaTec", "title": "ConvaTec ESENTA Skin Barrier for Protection Around Ostomies and Wounds, Silicone Based, No Stings & Alcohol Free, 50ml Spray Bottle (Pack of 1)", "price": 22.63, "rev12m": 26340, "units12m": 1164, "rating": 4.7, "reviews": 355, "variants": 1}, {"asin": "B00O4ASDTM", "brand": "Calier", "title": "Calier - Ado Quatro S - Pad Protector for Dogs and Cats - Based on Centella Asiatica and Aloe Vera - Helps Prevent Irritation and Cracking - 70ml with applicator", "price": 15.91, "rev12m": 26154, "units12m": 1644, "rating": 4.5, "reviews": 311, "variants": 1}, {"asin": "B0BCX3P16F", "brand": "Felisept", "title": "Felisept Wound Gel for Cats 20 ml - Disinfectant Cats - Cat Wound Care - For Cleaning and Care of Wound Areas", "price": 13.58, "rev12m": 23798, "units12m": 1752, "rating": 4.5, "reviews": 840, "variants": 3}, {"asin": "B09MQVTC1M", "brand": "MENFORSAN", "title": "MENFORSAN Protective Gel Pads for Dogs and Cats | with 100% Natural Aloe Vera | Hydrates | Soothes and Repairs | Fast Abrsorption | 60ml", "price": 9.31, "rev12m": 23466, "units12m": 2520, "rating": 4.4, "reviews": 612, "variants": 2}, {"asin": "B0BY2JCL3L", "brand": "ESENTA", "title": "ESENTA Skin Protector Spray 50ml - Protects skin near stomata and wounds - Does not dry out skin - Ideal for daily use for quick application - Made without latex", "price": 21.93, "rev12m": 23418, "units12m": 1068, "rating": 4.5, "reviews": 180, "variants": 1}, {"asin": "B0FSL951PR", "brand": "Veddelholzer", "title": "Veddelholzer Anti-Itch Spray for Dogs 500ml - Soothing Spray for Skin Care for Itchy and Skin Irritations With Micro-Silver, Aloe Vera and Calendula, Moisturizing and Soothing", "price": 11.98, "rev12m": 21712, "units12m": 1812, "rating": 4.4, "reviews": 103, "variants": 1}, {"asin": "B00Q78SHLS", "brand": "MENFORSAN", "title": "MENFORSAN Anti-bite furniture and textiles for dogs 125 ml", "price": 6.71, "rev12m": 21086, "units12m": 3144, "rating": 3.3, "reviews": 1041, "variants": 1}, {"asin": "B08RJYKSK5", "brand": "Institut Katharos", "title": "100% Natural Colloidal Silver Spray for Animals (Dogs, Cats) Versatile ● Healing ● Dog Itch (Dermatitis, Mites, Allergy) ● For Skin, Eyes, Ears.", "price": 14.47, "rev12m": 20831, "units12m": 1440, "rating": 4.1, "reviews": 6804, "variants": 1}, {"asin": "B071P1SCHR", "brand": "Urgo", "title": "Urgo - Filmogel® Spray Dressing - Invisible, Healing and Waterproof - 40ml Spray, 40 Applications, Packaging May Vary", "price": 8.95, "rev12m": 19968, "units12m": 2232, "rating": 4.4, "reviews": 285, "variants": 2}, {"asin": "B0DH2X8CGX", "brand": "WEALLIN", "title": "WEALLIN Anti-Bite Spray Dogs, 200 ml Repellent Dog Bites, Bitter Spray for Dogs, Anti-Bite Spray with Double Bitterness for Furniture, Plants, Safe for Indoor and Outdoor Use", "price": 23.99, "rev12m": 16412, "units12m": 684, "rating": 3.7, "reviews": 190, "variants": 1}], "topBrands": [{"brand": "Vet's Best", "rev12m": 122056, "units12m": 7896, "families": 1}, {"brand": "Canosept", "rev12m": 108099, "units12m": 10260, "families": 2}, {"brand": "Hansaplast", "rev12m": 69988, "units12m": 14748, "families": 3}, {"brand": "MENFORSAN", "rev12m": 62456, "units12m": 6996, "families": 4}, {"brand": "MyPetPrime", "rev12m": 52269, "units12m": 3876, "families": 1}, {"brand": "König", "rev12m": 39517, "units12m": 2328, "families": 1}, {"brand": "Calier", "rev12m": 37941, "units12m": 2580, "families": 2}, {"brand": "ALUDERMIN", "rev12m": 37197, "units12m": 2712, "families": 1}, {"brand": "Prontolind", "rev12m": 27398, "units12m": 3684, "families": 1}, {"brand": "OZONOVET 15 3", "rev12m": 26978, "units12m": 1236, "families": 1}]}, {"code": "IT", "name": "Włochy", "flag": "🇮🇹", "color": "#7c3aed", "cur": "EUR", "tld": "it", "xray": "#", "raw_rows": 134, "asin_rows": 54, "families": 49, "rev12m": 861528, "units12m": 73836, "brands": 36, "avg_price": 11.67, "fams": [{"asin": "B08RJYKSK5", "brand": "Institut Katharos", "title": "Colloidal Silver 100% Natural Spray for Animals (Dogs, Cats) All in 1 | Healing | Disinfectant | Antipruritic Remedies (Dermatitis, Mites) for Skin, Eyes, Ears, Nose.", "price": 14.99, "rev12m": 134932, "units12m": 9000, "rating": 4.3, "reviews": 6831, "variants": 1}, {"asin": "B0DZ6HR6ZS", "brand": "Hundepflege24", "title": "Dog Wound Healing Spray 125ml - Painless Antiseptic Disinfectant for Wounds and Itchy Dogs - Products for Dogs Without Alcohol, Soothing and Protective Against Bacteria, Fungi and Viruses", "price": 14.98, "rev12m": 100133, "units12m": 6684, "rating": 4.4, "reviews": 203, "variants": 1}, {"asin": "B07CV8P3SB", "brand": "Hansaplast", "title": "Hansaplast Wound Healing Spray, 50", "price": 10.81, "rev12m": 72260, "units12m": 6684, "rating": 4.4, "reviews": 10575, "variants": 1}, {"asin": "B07CZ1R111", "brand": "Hansaplast", "title": "Para Heridas Spray", "price": 7.63, "rev12m": 59211, "units12m": 7764, "rating": 4.5, "reviews": 507, "variants": 1}, {"asin": "B08RNC1S1W", "brand": "Institut Katharos", "title": "Colloidal Silver 100% Natural for Animals (Dogs, Cats) All in 1: Scarring | Disinfectant | Antipruritic Remedies (Dermatitis, Mites) | For Skin, Eyes, Ears | Bottle & Spray to Fill", "price": 16.99, "rev12m": 46682, "units12m": 2748, "rating": 4.4, "reviews": 3835, "variants": 1}, {"asin": "B088BY6JTY", "brand": "Hansaplast", "title": "Hansaplast Wound Healing Ointment, Healing Cream for Wounds and Damaged Skin, Reduces the Risk of Scars, Skin-Friendly Scar Cream, 1 x 20g", "price": 3.59, "rev12m": 43427, "units12m": 12096, "rating": 4.5, "reviews": 512, "variants": 1}, {"asin": "B0CYCP44LM", "brand": "Felisept", "title": "Felisept Cat Wound Spray 75ml - Cat Wound Spray to Clean Wounds, Skin and Mucous membranes - Wound Care for Cats - Easy to Use and Painless for Cats", "price": 12.26, "rev12m": 40465, "units12m": 3300, "rating": 4.5, "reviews": 293, "variants": 2}, {"asin": "B004JI2VT2", "brand": "ICF", "title": "ICF Clorexyderm Spot Gel 100ml - Disinfecting and Moisturizing Gel for Dogs and Cats - Prolonged Adhesion for Sensitive Areas such as Pliche, Paws and Ears", "price": 16.32, "rev12m": 36817, "units12m": 2256, "rating": 4.6, "reviews": 1177, "variants": 1}, {"asin": "B07R71Z4JN", "brand": "FARMACTIVE", "title": "Silver Spray Colloidal Silver Dressing 125 ml", "price": 10.75, "rev12m": 33678, "units12m": 3132, "rating": 4.6, "reviews": 104, "variants": 1}, {"asin": "B0725RJ67L", "brand": "FM Italia", "title": "FM Blu Spray Italia disinfectant for wounds of the horse 200 ml | horses", "price": 17.89, "rev12m": 32837, "units12m": 1836, "rating": 4.4, "reviews": 146, "variants": 1}, {"asin": "B0CJ373GTF", "brand": "KATZENPFLEGE24", "title": "Octenidin Cat Wound Healing Spray – Disinfects, Soothes, Cares & Protects Wounds of All Types Without Burning – 125 ml with Proven Active Ingredients", "price": 13.98, "rev12m": 32702, "units12m": 2340, "rating": 4.5, "reviews": 291, "variants": 1}, {"asin": "B01G3CMLQ4", "brand": "Canosept", "title": "Canosept Dog Wound Spray 75 ml - For Cleaning and Care of Wound Areas - Dog Antiseptic Spray - Optimal Wound Care - Stress Free Application - Recommended by Veterinarians", "price": 13.02, "rev12m": 23757, "units12m": 1824, "rating": 4.5, "reviews": 4291, "variants": 3}, {"asin": "B0DQ214GSM", "brand": "DBLABO", "title": "Anti Itching Spray for Dogs and Cats 250ml | Soothes Discomfort, Itching and Dermatitis Dog and Cat | Natural Formula Based on Aloe Vera, Chamomile and Rosemary | Safe, Vegan for All Ages", "price": 25.01, "rev12m": 20709, "units12m": 828, "rating": 3.9, "reviews": 136, "variants": 1}, {"asin": "B079NL7RYC", "brand": "LNAge Srl", "title": "Lesoderm Pet Healing Spray 50ml - Protective Spray Patch for Flakes and Surface Wounds for Dogs, Cats, Pets and Yard", "price": 17.42, "rev12m": 19027, "units12m": 1092, "rating": 4.2, "reviews": 1155, "variants": 1}, {"asin": "B0CB681SK6", "brand": "Flamingo", "title": "Flamingo Haemostatic Powder for Dogs, Cats and Small Animals - Stops Bleeding in 5 Seconds - Nail & Surface Wounds - Soothing & Disinfectant Effect - Dalko", "price": 11.32, "rev12m": 16975, "units12m": 1500, "rating": 4.5, "reviews": 405, "variants": 1}, {"asin": "B081VW3VW3", "brand": "CONNETTIVINA", "title": "Connettivina Silver Plus Fidia Spray 50ml", "price": 6.99, "rev12m": 16602, "units12m": 2376, "rating": 4.5, "reviews": 1253, "variants": 1}, {"asin": "B0GD7RS1JZ", "brand": "YOUACT", "title": "Regenera - Dermatological Veterinary Cream for Dogs and Cats with Ozonated Oil, Propylene Glycol, Hyaluronic Acid and Vitamin E - Adjuvant for Injured Skin. 1 x 10g Syringe", "price": 17.21, "rev12m": 15281, "units12m": 888, "rating": 4.7, "reviews": 4, "variants": 1}, {"asin": "B0GKPXJJ4X", "brand": "CICATRIDINA", "title": "Spray with Hyaluronic Acid Sodium Salt 0.2 mg/g | Hyaluronic Acid Spray | Adjuvant for Surface and Deep Wound Repair Processes | Skin Use in Adults and Children", "price": 16.36, "rev12m": 12956, "units12m": 792, "rating": 5.0, "reviews": 1, "variants": 1}, {"asin": "B0FSL951PR", "brand": "Veddelholzer", "title": "Veddelholzer 500 ml Spray for Dogs Soothing Spray for Skin Irritation with Nano-Silver, Aloe Vera and Calendula, Nourishing and Moisturizing for All Hair Types", "price": 13.92, "rev12m": 11363, "units12m": 816, "rating": 4.4, "reviews": 101, "variants": 1}, {"asin": "B07PC1V85L", "brand": "Aessere", "title": "Colloidal Silver Animal Spray - Colloidal Silver for Dogs and Cats Gentle for Pet Care and Hygiene, Ideal for Dog Ear Cleaning, Dog Eye Cleaning and Hygiene Paws - 150ml Aessere", "price": 18.63, "rev12m": 10510, "units12m": 564, "rating": 4.4, "reviews": 143, "variants": 1}], "topBrands": [{"brand": "Institut Katharos", "rev12m": 181614, "units12m": 11748, "families": 2}, {"brand": "Hansaplast", "rev12m": 177239, "units12m": 26604, "families": 4}, {"brand": "Hundepflege24", "rev12m": 105454, "units12m": 6948, "families": 2}, {"brand": "Felisept", "rev12m": 40465, "units12m": 3300, "families": 1}, {"brand": "FM Italia", "rev12m": 38225, "units12m": 2124, "families": 2}, {"brand": "ICF", "rev12m": 36817, "units12m": 2256, "families": 1}, {"brand": "FARMACTIVE", "rev12m": 33678, "units12m": 3132, "families": 1}, {"brand": "KATZENPFLEGE24", "rev12m": 32702, "units12m": 2340, "families": 1}, {"brand": "Canosept", "rev12m": 32584, "units12m": 2748, "families": 2}, {"brand": "DBLABO", "rev12m": 20709, "units12m": 828, "families": 1}]}], "totals": {"rev12m": 10392164, "units12m": 875400, "families": 270, "brands": 141, "nMarkets": 4}, "topBrands": [{"brand": "Leucillin", "rev12m": 1999243, "units12m": 164280}, {"brand": "BUGALUGS", "rev12m": 1124982, "units12m": 63384}, {"brand": "RenaSan", "rev12m": 943619, "units12m": 82236}, {"brand": "Canosept", "rev12m": 828034, "units12m": 76452}, {"brand": "Institut Katharos", "rev12m": 697430, "units12m": 47628}, {"brand": "Felisept", "rev12m": 454650, "units12m": 45708}, {"brand": "Vetericyn", "rev12m": 288195, "units12m": 17964}, {"brand": "Hansaplast", "rev12m": 247227, "units12m": 41352}, {"brand": "Safe + Sound", "rev12m": 209022, "units12m": 36456}, {"brand": "flint Med", "rev12m": 202116, "units12m": 42372}, {"brand": "VetSet", "rev12m": 189681, "units12m": 8436}, {"brand": "Hundepflege24", "rev12m": 185021, "units12m": 13068}]};
+const fmtM = v => '€' + Math.round(v).toLocaleString('pl-PL');
+const fmtI = v => Math.round(v).toLocaleString('pl-PL');
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cmap = {}; D.markets.forEach(m=>cmap[m.code]=m.color);
+
+document.getElementById('xrayBtns').innerHTML = D.markets.map(m=>
+  `<a href="${m.xray}" target="_blank">${m.flag} ${m.code} X-Ray</a>`).join('');
+
+const kpis = [
+  {lbl:'Rynek łącznie (12 mies.)', val:fmtM(D.totals.rev12m), note:'przychód Parent Level'},
+  {lbl:'Sztuki (12 mies.)', val:fmtI(D.totals.units12m), note:'projekcja'},
+  {lbl:'Rodziny produktów', val:fmtI(D.totals.families), note:'rodzice (odduplikowane)'},
+  {lbl:'Rynki', val:D.totals.nMarkets, note:'DE · ES · IT · UK'},
+  {lbl:'Marki', val:D.totals.brands, note:'na wszystkich rynkach'},
+];
+document.getElementById('kpis').innerHTML = kpis.map(k=>
+  `<div class="kpi"><div class="lbl">${k.lbl}</div><div class="val">${k.val}</div><div class="note">${k.note}</div></div>`).join('');
+
+const st = document.getElementById('summaryTbl');
+st.innerHTML = '<thead><tr><th class="l">Rynek</th><th>Waluta</th><th>Sprzedaż 12 mies.</th><th>Udział</th><th>Sztuki 12 mies.</th><th>Rodziny</th><th>ASIN-y</th><th>Marki</th><th>Śr. cena</th></tr></thead><tbody>'
+  + D.markets.map(m=>`<tr>
+      <td class="l"><span class="flag">${m.flag}</span>${esc(m.name)}</td>
+      <td>${m.cur}${m.cur==='GBP'?' → €':''}</td>
+      <td>${fmtM(m.rev12m)}</td>
+      <td>${(m.rev12m/D.totals.rev12m*100).toFixed(1)}%</td>
+      <td>${fmtI(m.units12m)}</td>
+      <td>${m.families}</td>
+      <td>${m.asin_rows}</td>
+      <td>${m.brands}</td>
+      <td>€${m.avg_price.toFixed(2)}</td>
+    </tr>`).join('')
+  + `<tr style="font-weight:800;background:#f1f5f9"><td class="l">Razem</td><td>EUR</td><td>${fmtM(D.totals.rev12m)}</td><td>100%</td><td>${fmtI(D.totals.units12m)}</td><td>${D.totals.families}</td><td>${D.markets.reduce((s,m)=>s+m.asin_rows,0)}</td><td>${D.totals.brands}</td><td>—</td></tr></tbody>`;
+
+Chart.register(ChartDataLabels);
+
+new Chart(revBar,{type:'bar',data:{labels:D.markets.map(m=>m.code),
+  datasets:[{data:D.markets.map(m=>m.rev12m),backgroundColor:D.markets.map(m=>m.color)}]},
+  options:{plugins:{legend:{display:false},datalabels:{anchor:'end',align:'top',formatter:v=>'€'+(v/1e6).toFixed(2)+'M',font:{weight:700,size:10}}},
+  scales:{y:{ticks:{callback:v=>'€'+(v/1e6).toFixed(1)+'M'}}}}});
+
+new Chart(revPie,{type:'doughnut',data:{labels:D.markets.map(m=>m.name),
+  datasets:[{data:D.markets.map(m=>m.rev12m),backgroundColor:D.markets.map(m=>m.color)}]},
+  options:{plugins:{legend:{position:'right'},datalabels:{color:'#fff',font:{weight:700,size:11},
+    formatter:(v)=>(v/D.totals.rev12m*100).toFixed(0)+'%'}}}});
+
+new Chart(unitsBar,{type:'bar',data:{labels:D.markets.map(m=>m.code),
+  datasets:[{data:D.markets.map(m=>m.units12m),backgroundColor:D.markets.map(m=>m.color)}]},
+  options:{plugins:{legend:{display:false},datalabels:{anchor:'end',align:'top',formatter:v=>(v/1e3).toFixed(0)+' tys.',font:{weight:700,size:10}}},
+  scales:{y:{ticks:{callback:v=>(v/1e3).toFixed(0)+' tys.'}}}}});
+
+new Chart(brandBar,{type:'bar',data:{labels:D.topBrands.map(b=>b.brand),
+  datasets:[{data:D.topBrands.map(b=>b.rev12m),backgroundColor:'#2563eb'}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false},datalabels:{anchor:'end',align:'right',formatter:v=>'€'+(v/1e6).toFixed(2)+'M',font:{weight:700,size:9},clamp:true}},
+  scales:{x:{ticks:{callback:v=>'€'+(v/1e6).toFixed(1)+'M'}}}}});
+
+const pills = document.getElementById('prodPills');
+pills.innerHTML = D.markets.map((m,i)=>
+  `<button class="pill${i===0?' active':''}" data-c="${m.code}" style="${i===0?`background:${m.color}`:''}">${m.flag} ${m.name}</button>`).join('');
+
+function renderProducts(code){
+  const m = D.markets.find(x=>x.code===code);
+  const t = document.getElementById('prodTbl');
+  t.innerHTML = '<thead><tr><th class="l">#</th><th class="l">Marka</th><th class="l">Produkt</th><th>Cena</th><th>Sprzedaż 12 mies.</th><th>Sztuki 12 mies.</th><th>Warianty</th><th>Ocena</th><th>Opinie</th></tr></thead><tbody>'
+    + m.fams.map((f,i)=>`<tr>
+        <td class="l">${i+1}</td>
+        <td class="l"><span class="badge" style="background:${m.color}">${esc(f.brand)}</span></td>
+        <td class="l" title="${esc(f.title)}"><a class="plink" href="https://www.amazon.${m.tld}/dp/${f.asin}" target="_blank">${esc(f.title.slice(0,70))}${f.title.length>70?'…':''}</a></td>
+        <td>€${f.price.toFixed(2)}</td>
+        <td>${fmtM(f.rev12m)}</td>
+        <td>${fmtI(f.units12m)}</td>
+        <td>${f.variants}</td>
+        <td>${f.rating?f.rating.toFixed(1):'—'}</td>
+        <td>${fmtI(f.reviews)}</td>
+      </tr>`).join('') + '</tbody>';
+}
+pills.addEventListener('click',e=>{
+  const b=e.target.closest('.pill'); if(!b)return;
+  pills.querySelectorAll('.pill').forEach(p=>{p.classList.remove('active');p.style.background='';});
+  b.classList.add('active'); b.style.background=cmap[b.dataset.c];
+  renderProducts(b.dataset.c);
+});
+renderProducts(D.markets[0].code);
+</script>
+</body>
+</html>
